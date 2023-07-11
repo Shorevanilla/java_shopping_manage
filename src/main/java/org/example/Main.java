@@ -1,5 +1,4 @@
 package org.example;
-
 import java.util.Scanner;
 
 public class Main {
@@ -10,10 +9,10 @@ public class Main {
         String userInput = "";
 
         while(true) {
-            System.out.println("请输入你的指令, exit退出");
+            
             System.out.print("你当前在第一级目录下 >");
+            System.out.println("请输入你的指令, exit退出:");
             userInput = scanner.nextLine();
-
             if(userInput.equals("exit")) {
                 break;
             }
@@ -23,45 +22,46 @@ public class Main {
             if (userInput.equals("help")) {
                 Main.help();
             }
-            if (userInput.equals("ulogin")) {
-                Main.uEnter();
-            if (userInput.equals("mlogin")) {
-                    Main.mEnter();
+            else if (userInput.equals("ulogin")) {
+                Main.uEnter();}
+             else  if (userInput.equals("mlogin")) {
+                Main.mEnter();
                 }
 
         }
-
+        
         scanner.close();
         System.out.println("Done.");
-    }
+    
     }
     private static void help() {
-        System.out.print("欢迎进入帮助子菜单");
+        System.out.println("欢迎进入帮助子菜单");
 
         Scanner scanner = new Scanner(System.in);
         String userInput = "";
 
         while(true) {
-            System.out.println("请输入你的指令,q 退出");
-            System.out.print("你当前在 help 的二级子目录下 >");
+            System.out.println("**********************help**********************");
+            System.out.println("请输入你的指令，输入 q 返回上一级:");
             userInput = scanner.nextLine();
-
+            
             if (userInput.equals("q")) {
                 break;
             }
 
             System.out.println("其实吧，这个也就是做个样子给你看看，让你知道怎么做二级界面罢了");
         }
-        scanner.close();
+       // flush(scanner);
+        
     }
     private static void uEnter() {
-        System.out.print("********************登入********************");
+        System.out.println("********************用户登入********************");
 
         Scanner scanner = new Scanner(System.in);
         String userInput = "";
 
         while(true) {
-            System.out.println("请输入你的指令,q 退出");
+            System.out.println("请输入你的指令,q 退出:");
             System.out.print("你当前在 uEnter 的二级子目录下 >");
             userInput = scanner.nextLine();
 
@@ -71,10 +71,11 @@ public class Main {
 
             System.out.println("其实吧，这个也就是做个样子给你看看，让你知道怎么做二级界面罢了");
         }
-        scanner.close();
+       // flush(scanner);
+        
     }
     private static void mEnter() {
-        System.out.print("********************登入********************");
+        System.out.println("********************管理员登入********************");
 
         Scanner scanner = new Scanner(System.in);
         String userInput = "";
@@ -90,7 +91,8 @@ public class Main {
 
             System.out.println("其实吧，这个也就是做个样子给你看看，让你知道怎么做二级界面罢了");
         }
-        scanner.close();
+       // flush(scanner);
+        
     }
-
+   
 }
