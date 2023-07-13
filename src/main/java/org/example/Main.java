@@ -1,26 +1,99 @@
 package org.example;
-/*import java.util.Scanner;
-import java.io.File;
+//import java.util.Scanner;
+//import java.io.File;
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
+//import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.sql.*
-*/ ;
+import java.sql.*;
+
 public class Main {
+    public static void initSqlite(){
+        try {
+            DriverManager.registerDriver(new org.sqlite.JDBC());//启动驱动//jdbc:sqlite:是协议
+            Connection connection = DriverManager.getConnection("jdbc:sqlite:src/main/java/org/example/mydatabase.db");// 连接到 SQLite 数据库文件
+            Statement statement = connection.createStatement();
+            // 创建表
+            statement.execute("CREATE TABLE IF NOT EXISTS user (id INTEGER PRIMARY KEY, name TEXT, password TEXT)");
+            statement.execute("CREATE TABLE IF NOT EXISTS manager (id INTEGER PRIMARY KEY, name TEXT, password TEXT)");
+            statement.execute("CREATE TABLE IF NOT EXISTS commodity (id INTEGER PRIMARY KEY, name TEXT, information TEXT)");
+            statement.execute("CREATE TABLE IF NOT EXISTS shoppingCart (id INTEGER PRIMARY KEY, commodity TEXT)");
+            statement.execute("CREATE TABLE IF NOT EXISTS shoppingHistory (id INTEGER PRIMARY KEY, history TEXT)");
+            statement.execute("CREATE TABLE IF NOT EXISTS client (id INTEGER PRIMARY KEY, name TEXT,information TEXT,manager TEXT)");
+            
+               
+                    String queryInsert = "INSERT INTO manager (name, password) VALUES ('admin','admin')";
+                    statement.executeUpdate(queryInsert);
+    
+                statement.close();
+                connection.close();
+            }
+             catch (SQLException e) {
+                e.printStackTrace();
+                System.out.println("初始化失败");
+            }
+        }
             public static void main(String[] args) {
-             ConnectSQLite link=new ConnectSQLite();
-             link.initSqlite(); 
-             link.showCommodity();
+            Login login=new Login();
+             ManagerOperation link=new ManagerOperation();
+             UserOperation userop=new UserOperation();
+
+             initSqlite(); 
+        /*   link.modifySelfPassword("admin", "admin");
+            if( login.accountVerify("manager","admin", "admin"))
+           { 
+            System.out.println("登入成功");
+            link.modifySelfPassword("admin", "123456");
+            if(login.accountVerify("manager","admin", "123456"))
+            System.out.println("修改成功");
+            }
+             else  System.out.println("账号或密码错误");
+            link.insertClient("溜溜梅", "您没事吧？");
+            link.insertClient("纯真集团", "扎不多德勒");
+            link.insertClient("下头影视", "家人们懂得都懂");
+            link.insertClient("杏花微雨", "究竟是错付了");
+            link.showClient();
+            link.searchClient("下头");
+            link.searchClient("杏花");
+*/
+           // link.delete("client", 1);
+            
+             
+            link.showCommodity();
             link.insertCommodity("快乐水", "喝了就会变得快乐");
             link.insertCommodity("黑暗水", "喝了就会变得黑暗");
             link.insertCommodity("bb霜", "补水后将变得快乐");
             link.insertCommodity("偷学宝典", "偷学达到极乐");
              //link.delete("commodity",3);
             
-             link.searchCommodity("水");
-            }
-   
+             //link.searchCommodity("水");
+            // link.modifyCommodity("神仙玉女水", 1);
+             //link.searchCommodity(1);
+             
+
+            String name1="彭于晏";
+            String name2="吴彦祖";
+            String name3="TalarSwift";
+            String password="123456";
+            
+             if(userop.accountNameCheck(name1)  && userop.isPasswordLengthValid(password)&&  userop.isPasswordSame(password, password)  )
+             if(userop.register(name1, password)) System.out.println("用户注册成功");
+            
+            if(userop.accountNameCheck(name2)  && userop.isPasswordLengthValid(password)&&  userop.isPasswordSame(password, password)  )
+            if(userop.register(name2, password) )System.out.println("用户注册成功");
+            
+            if(userop.accountNameCheck(name3)  && userop.isPasswordLengthValid(password)&&  userop.isPasswordSame(password, password)  )
+             if (userop.register(name3, password) )System.out.println("用户注册成功");
+           if( login.accountVerify("user", name3, password))
+           System.out.println("用户登入成功");
+           else  System.out.println("用户名或密码错误");
+          String newpassword= link.resetUserPassword(name3);
+          
+          if(newpassword!=null)
+          {
+            System.out.println("成功重置用户 "+name3+" 密码，新密码为：\n"+newpassword);
+        }
+            
         }
    
    
@@ -164,3 +237,4 @@ createNewDatabase("/workspace/java_shopping_manage/src/main/java/org/database/cr
  
   
 } */
+}
