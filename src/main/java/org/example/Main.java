@@ -16,9 +16,9 @@ public class Main {
             // 创建表
             statement.execute("CREATE TABLE IF NOT EXISTS user (id INTEGER PRIMARY KEY, name TEXT, password TEXT)");
             statement.execute("CREATE TABLE IF NOT EXISTS manager (id INTEGER PRIMARY KEY, name TEXT, password TEXT)");
-            statement.execute("CREATE TABLE IF NOT EXISTS commodity (id INTEGER PRIMARY KEY, name TEXT, information TEXT)");
-            statement.execute("CREATE TABLE IF NOT EXISTS shoppingCart (id INTEGER PRIMARY KEY, commodity TEXT)");
-            statement.execute("CREATE TABLE IF NOT EXISTS shoppingHistory (id INTEGER PRIMARY KEY, history TEXT)");
+            statement.execute("CREATE TABLE IF NOT EXISTS commodity (id INTEGER PRIMARY KEY, name TEXT, information TEXT,price REAL)");
+           // statement.execute("CREATE TABLE IF NOT EXISTS shoppingCart (id INTEGER PRIMARY KEY, commodity TEXT)");
+           // statement.execute("CREATE TABLE IF NOT EXISTS shoppingHistory (id INTEGER PRIMARY KEY, history TEXT)");
             statement.execute("CREATE TABLE IF NOT EXISTS client (id INTEGER PRIMARY KEY, name TEXT,information TEXT,manager TEXT)");
             
                
@@ -34,9 +34,9 @@ public class Main {
             }
         }
             public static void main(String[] args) {
-            Login login=new Login();
+          //  Login login=new Login();
              ManagerOperation link=new ManagerOperation();
-             UserOperation userop=new UserOperation();
+          //   UserOperation userop=new UserOperation();
 
              initSqlite(); 
         /*   link.modifySelfPassword("admin", "admin");
@@ -60,17 +60,18 @@ public class Main {
             
              
             link.showCommodity();
-            link.insertCommodity("快乐水", "喝了就会变得快乐");
-            link.insertCommodity("黑暗水", "喝了就会变得黑暗");
-            link.insertCommodity("bb霜", "补水后将变得快乐");
-            link.insertCommodity("偷学宝典", "偷学达到极乐");
+            link.insertCommodity("快乐水", "喝了就会变得快乐",4);
+            link.insertCommodity("黑暗水", "喝了就会变得黑暗",10);
+            link.insertCommodity("bb霜", "补水后将变得快乐",15);
+            link.insertCommodity("偷学宝典", "偷学达到极乐",50.5);
+            link.modifyCommodity(12, 15);
              //link.delete("commodity",3);
             
              //link.searchCommodity("水");
             // link.modifyCommodity("神仙玉女水", 1);
              //link.searchCommodity(1);
              
-
+/* 
             String name1="彭于晏";
             String name2="吴彦祖";
             String name3="TalarSwift";
@@ -93,9 +94,12 @@ public class Main {
           {
             System.out.println("成功重置用户 "+name3+" 密码，新密码为：\n"+newpassword);
         }
-            
+             userop.addCommodity(1,1);
+             userop.addCommodity(1,1);
+             userop.addCommodity(1,2);
+             userop.showShoppingCart(1);
         }
-   
+   */
    
    
    
@@ -237,4 +241,5 @@ createNewDatabase("/workspace/java_shopping_manage/src/main/java/org/database/cr
  
   
 } */
+}
 }

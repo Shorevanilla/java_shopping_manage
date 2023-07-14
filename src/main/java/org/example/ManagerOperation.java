@@ -150,7 +150,8 @@ void showCommodity(){
         int id = resultSet.getInt("id");
         String name = resultSet.getString("name");
         String imformation = resultSet.getString("information");
-        System.out.println("商品ID: " + id + ", 商品名称: " + name + ", 商品介绍: " + imformation);
+        float price=resultSet.getFloat("price");
+        System.out.println("商品ID: " + id + ", 商品名称: " + name + ",   商品介绍: " + imformation+",  价格："+price);
     }
      resultSet.close();
      statement.close();
@@ -162,19 +163,19 @@ void showCommodity(){
   }
 }
 
-public void insertCommodity(String name, String information) {
+public void insertCommodity(String name, String information,double price) {
     try {
         Connection connection = DriverManager.getConnection("jdbc:sqlite:src/main/java/org/example/mydatabase.db");
         Statement statement = connection.createStatement();
         
         // 检查是否已存在具有相同名称和信息的商品
-        String queryCheck = "SELECT * FROM commodity WHERE name = '" + name + "' AND information = '" + information + "'";
+        String queryCheck = "SELECT * FROM commodity WHERE name = '" + name + "' ";
         ResultSet resultSet = statement.executeQuery(queryCheck);
         if (resultSet.next()) {
             System.out.println("该商品已存在");
         } else {
             // 插入新商品
-            String queryInsert = "INSERT INTO commodity (name, information) VALUES ('" + name + "', '" + information + "')";
+            String queryInsert = "INSERT INTO commodity (name, information,price) VALUES ('" + name + "', '" + information + " ',  ' "+String.valueOf(price)+ "')";
             statement.executeUpdate(queryInsert);
             System.out.println("商品添加成功");
         }
@@ -210,7 +211,8 @@ void searchCommodity(int id){//根据id唯一搜索
      if (resultSet.next()) {
         String name = resultSet.getString("name");
         String information = resultSet.getString("information");
-        System.out.println("根据商品ID: " + id + ", 找到商品：\n商品名称: " + name + ", 商品介绍: " + information);
+        float price=resultSet.getFloat("price");
+        System.out.println("根据商品ID: " + id + ", 找到商品：\n商品名称: " + name + ", 商品介绍: " + information+"  ,价格："+price);
     } else {
         System.out.println("找不到该 id "+Integer.toString(id)+"  对应的商品");
     }
@@ -236,7 +238,8 @@ public void searchCommodity(String keyword) {//根据包含的搜索关键字搜
             int id = resultSet.getInt("id");
             String name = resultSet.getString("name");
             String information = resultSet.getString("information");
-            System.out.println("商品ID: " + id + ", 商品名称: " + name + ", 商品介绍: " + information);
+            float price=resultSet.getFloat("price");
+            System.out.println("商品ID: " + id + ", 商品名称: " + name + ", 商品介绍: " + information+"  ,价格："+price);
         }
         
         resultSet.close();
@@ -249,19 +252,35 @@ public void searchCommodity(String keyword) {//根据包含的搜索关键字搜
 }
 
 
-void modifyCommodity(String name, int id){
+void modifyCommodity(int id,String name, double price, String information ) {//还没测试
     try {
-Connection connection = DriverManager.getConnection("jdbc:sqlite:src/main/java/org/example/mydatabase.db");// 连接到 SQLite 数据库文件
-Statement statement = connection.createStatement();
-String query="UPDATE commodity SET name = '"+name+"' WHERE id = "+Integer.toString(id);
-statement.executeUpdate(query);
-//System.out.println(query);
-      //  resultSet.close();
-    statement.close();
-    connection.close();
+        Connection connection = DriverManager.getConnection("jdbc:sqlite:src/main/java/org/example/mydatabase.db");
+        Statement statement = connection.createStatement();
+
+        String query = "UPDATE commodity SET name = '" + name + "', price = " + price + ", information = '" + information + "' WHERE id = " + id;
+        statement.executeUpdate(query);
+
+        statement.close();
+        connection.close();
     } catch (SQLException e) {
         e.printStackTrace();
         System.out.println("修改商品信息失败");
+    }
+}
+void modifyCommodity(int id, double price ) {
+    try {
+        Connection connection = DriverManager.getConnection("jdbc:sqlite:src/main/java/org/example/mydatabase.db");
+        Statement statement = connection.createStatement();
+
+        String query = "UPDATE commodity SET  price = '" + String.valueOf(price) + "' WHERE id = " + String.valueOf(id);
+        statement.executeUpdate(query);
+
+        statement.close();
+        connection.close();
+        System.out.println("成功修改商品价格");
+    } catch (SQLException e) {
+        e.printStackTrace();
+        System.out.println("修改商品价格失败");
     }
 }
 

@@ -68,97 +68,134 @@ void modifySelfPassword(String name,String newpassword){
 }
 
 
-
-Boolean register(String name,String password){
+/* 
+public Boolean register(String name, String password) {
     try {
         Connection connection = DriverManager.getConnection("jdbc:sqlite:src/main/java/org/example/mydatabase.db");
         Statement statement = connection.createStatement();
         
-
+        // 插入用户信息到 user 表
+        String queryInsertUser = "INSERT INTO user (name, password) VALUES ('" + name + "', '" + password + "')";
+        statement.executeUpdate(queryInsertUser);
+        
+        // 获取刚插入的用户的 ID
+        ResultSet generatedKeys = statement.getGeneratedKeys();
+        int userId = -1;
+        if (generatedKeys.next()) {
+            userId = generatedKeys.getInt(1);
+        }
+        generatedKeys.close();
+        
+        if (userId != -1) {
+            // 检查该用户的购物车是否已存在
+            String queryCheckShoppingCart = "SELECT * FROM shoppingCart WHERE id = " + userId;
+            ResultSet resultSet = statement.executeQuery(queryCheckShoppingCart);
             
-            String queryInsert = "INSERT INTO user (name, password) VALUES ('" + name + "', '" + password+ "')";
-            statement.executeUpdate(queryInsert);
-            statement.executeUpdate( "INSERT INTO shoppingCart ");
-            statement.executeUpdate( "INSERT INTO shoppingHistory ");
-          //  System.out.println("用户注册成功");
-        
-        
-        
-        statement.close();
-        connection.close();
-          return true;
+            if (!resultSet.next()) {
+                // 创建对应用户的购物车行
+                String queryInsertShoppingCart = "INSERT INTO shoppingCart (id, commodity) VALUES (" + userId + ", '')";
+                statement.executeUpdate(queryInsertShoppingCart);
+                
+                // 创建对应用户的购物历史行
+                String queryInsertShoppingHistory = "INSERT INTO shoppingHistory (id, history) VALUES (" + userId + ", '')";
+                statement.executeUpdate(queryInsertShoppingHistory);
+                
+                System.out.println("用户注册成功");
+                resultSet.close();
+                statement.close();
+                connection.close();
+                return true;
+            } else {
+                System.out.println("该用户的购物车已存在");
+                resultSet.close();
+                statement.close();
+                connection.close();
+                return false;
+            }
+        } else {
+            System.out.println("获取用户ID失败");
+            statement.close();
+            connection.close();
+            return false;
+        }
     } catch (SQLException e) {
         e.printStackTrace();
         System.out.println("用户注册失败");
         return false;
     }
 }
-void showClient(){
-    try{
-     
-     Connection connection = DriverManager.getConnection("jdbc:sqlite:src/main/java/org/example/mydatabase.db");// 连接到 SQLite 数据库文件
-     Statement statement = connection.createStatement();
-     ResultSet resultSet = statement.executeQuery("SELECT * FROM client");
-     while (resultSet.next()) {
-         int id = resultSet.getInt("id");
-         String name = resultSet.getString("name");
-         String imformation = resultSet.getString("information");
-         System.out.println("客户ID: " + id + ", 客户名称: " + name + ", 客户信息: " + imformation);
-     }
-      resultSet.close();
-      statement.close();
-      connection.close();
- }
-   catch(SQLException e){
-     e.printStackTrace();
-     System.out.println("未能成功列出所有客户信息");
-   }
- }
+*/
+public Boolean register(String name, String password) {
+    try {
+        Connection connection = DriverManager.getConnection("jdbc:sqlite:src/main/java/org/example/mydatabase.db");
+        Statement statement = connection.createStatement();
+        
+        // 插入用户信息到 user 表
+        String queryInsertUser = "INSERT INTO user (name, password) VALUES ('" + name + "', '" + password + "')";
+        statement.executeUpdate(queryInsertUser);
+        
+        // 获取刚插入的用户的 ID
+        ResultSet generatedKeys = statement.getGeneratedKeys();
+        int userId = -1;
+        if (generatedKeys.next()) {
+            userId = generatedKeys.getInt(1);
+        }
+        generatedKeys.close();
+        
+        if (userId != -1) {
+            // 创建唯一对应的购物车表和购物历史表
+            String shoppingCartTableName = "shoppingCart_" + userId;
+            String shoppingHistoryTableName = "shoppingHistory_" + userId;
+            
+            // 创建购物车表
+            String queryCreateShoppingCartTable = "CREATE TABLE IF NOT EXISTS " + shoppingCartTableName + " (id INTEGER PRIMARY KEY, commodityID INTEGER, amount INTEGER)";
+            statement.execute(queryCreateShoppingCartTable);
+            
+            // 创建购物历史表
+            String queryCreateShoppingHistoryTable = "CREATE TABLE IF NOT EXISTS " + shoppingHistoryTableName + " (id INTEGER PRIMARY KEY, commodityID INTEGER, payMentHistory TEXT)";
+            statement.execute(queryCreateShoppingHistoryTable);
+            
+            System.out.println("用户注册成功");
+            
+            statement.close();
+            connection.close();
+            
+            return true;
+        } else {
+            System.out.println("获取用户ID失败");
+            statement.close();
+            connection.close();
+            return false;
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+        System.out.println("用户注册失败");
+        return false;
+    }
+}
+
+
  public Boolean addCommodity(int userID, int commodityID) {
     try {
         Connection connection = DriverManager.getConnection("jdbc:sqlite:src/main/java/org/example/mydatabase.db");
         Statement statement = connection.createStatement();
         
-        // 找到该用户对应的购物车
-        String queryCheck = "SELECT * FROM shoppingCart WHERE id = " + userID;
-        ResultSet resultSet = statement.executeQuery(queryCheck);
         
-        if (resultSet.next()) {
-            String commodity = resultSet.getString("commodity");
-            
-            // 如果购物车已经有商品，添加商品 ID，并使用逗号分隔
-            if (!commodity.isEmpty()) {
-                commodity += "," + commodityID;
-            } else {
-                commodity = String.valueOf(commodityID);
-            }
-            
-            // 更新购物车中的商品信息
-            String queryUpdate = "UPDATE shoppingCart SET commodity = '" + commodity + "' WHERE id = " + userID;
-            statement.executeUpdate(queryUpdate);
-            
-            System.out.println("商品已添加到购物车");
-            resultSet.close();
-        statement.close();
-        connection.close();
-            return true;
-        } else {
-            System.out.println("找不到该用户的购物车");
-            resultSet.close();
+           // resultSet.close();
         statement.close();
         connection.close();
             return false;
         }
         
         
-    } catch (SQLException e) {
+     catch (SQLException e) {
         e.printStackTrace();
         System.out.println("购物车添加商品失败");
         return false;
     }
 }
 
-public Boolean showShoppingCart(int userID, int commodityID) {
+void  showShoppingCart(int userID) {
     try {
         Connection connection = DriverManager.getConnection("jdbc:sqlite:src/main/java/org/example/mydatabase.db");
         Statement statement = connection.createStatement();
@@ -172,33 +209,29 @@ public Boolean showShoppingCart(int userID, int commodityID) {
             
             // 如果购物车已经有商品，添加商品 ID，并使用逗号分隔
             if (!commodity.isEmpty()) {
-                commodity += "," + commodityID;
-            } else {
-                commodity = String.valueOf(commodityID);
+                //System.out.println("购物车");
+              String array[]=commodity.split(",");
+                for(int i=0;i<array.length;i++){
+               resultSet = statement.executeQuery("SELECT * FROM commodity WHERE id="+array[i]);
+             if (resultSet.next()) {
+             String name = resultSet.getString("name");
+             String information = resultSet.getString("information");
+              System.out.println("商品ID: " + array[i] +   ", 商品名称: " + name + ", 商品介绍: " + information);
+                            }
+                   }
+      
+          }
+            } else {  
+                 resultSet.close();
+                 statement.close();
+                connection.close();
+                System.out.println("购物车为空");
             }
             
-            // 更新购物车中的商品信息
-            String queryUpdate = "UPDATE shoppingCart SET commodity = '" + commodity + "' WHERE id = " + userID;
-            statement.executeUpdate(queryUpdate);
-            
-            System.out.println("商品已添加到购物车");
-            resultSet.close();
-        statement.close();
-        connection.close();
-            return true;
-        } else {
-            System.out.println("找不到该用户的购物车");
-            resultSet.close();
-        statement.close();
-        connection.close();
-            return false;
-        }
-        
-        
     } catch (SQLException e) {
         e.printStackTrace();
-        System.out.println("购物车添加商品失败");
-        return false;
+        System.out.println("购物车查看失败");
+        
     }
 }
 
