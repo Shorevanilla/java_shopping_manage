@@ -89,16 +89,22 @@ public class Main {
            System.out.println("用户登入成功");
            else  System.out.println("用户名或密码错误");
           String newpassword= link.resetUserPassword(name3);
+
+
           
+        
+        
           if(newpassword!=null)
           {
             System.out.println("成功重置用户 "+name3+" 密码，新密码为：\n"+newpassword);
         }
-             userop.addCommodity(1,1);
+             userop.addCommodity(1,3);
              userop.addCommodity(1,1);
              userop.addCommodity(1,2);
              userop.showShoppingCart(1);
-        }
+       
+       
+            }
          
 
    

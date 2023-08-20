@@ -366,14 +366,14 @@ public void showShoppingCart(int userID) {
         
         // 找到该用户对应的购物车
         String queryCheck = "SELECT * FROM shoppingCart_" + String.valueOf(userID);
-        ResultSet resultSet = statement.executeQuery(queryCheck);
+        ResultSet rs = statement.executeQuery(queryCheck);
         
-        if (resultSet.next()) {
+        if (rs.next()) {
             System.out.println("购物车内容：");
             do {
-                int commodityID = resultSet.getInt("commodityID");
-                int amount = resultSet.getInt("amount");
-                double totalPrice = (double)resultSet.getFloat("totalPrice");
+                int commodityID = rs.getInt("commodityID");
+                int amount = rs.getInt("amount");
+                double totalPrice = (double) rs.getFloat("totalPrice");
                 String queryCommodity = "SELECT * FROM commodity WHERE id = " + String.valueOf(commodityID);
                 ResultSet resultSetCommodity = statement.executeQuery(queryCommodity);
                 
@@ -382,7 +382,6 @@ public void showShoppingCart(int userID) {
                     String information = resultSetCommodity.getString("information");
                     float price = resultSetCommodity.getFloat("price");
                    
-                    
                     System.out.println("商品ID: " + commodityID);
                     System.out.println("商品名称: " + name);
                     System.out.println("商品信息: " + information);
@@ -392,13 +391,13 @@ public void showShoppingCart(int userID) {
                     System.out.println("---------------------------");
                 }
                 
-                resultSetCommodity.close();
-            } while (resultSet.next());
+                //resultSetCommodity.close();
+            } while (rs.next()); // 移动到下一行
         } else {
             System.out.println("购物车为空");
         }
         
-        resultSet.close();
+        rs.close();
         statement.close();
         connection.close();
     } catch (SQLException e) {
@@ -407,53 +406,87 @@ public void showShoppingCart(int userID) {
     }
 }
 
-
-
-void searchClient(int id){//根据id唯一搜索
-    try{
-     Connection connection = DriverManager.getConnection("jdbc:sqlite:src/main/java/org/example/mydatabase.db");// 连接到 SQLite 数据库文件
-     Statement statement = connection.createStatement();
-     ResultSet resultSet = statement.executeQuery("SELECT * FROM client WHERE id="+Integer.toString(id));
-     if (resultSet.next()) {
-        String name = resultSet.getString("name");
-        String information = resultSet.getString("information");
-        System.out.println("根据客户ID: " + id + ", 找到客户：\n客户名称: " + name + ", 客户信息: " + information);
-    } else {
-        System.out.println("找不到 id "+Integer.toString(id)+"  对应的客户");
-    }
-      resultSet.close();
-      statement.close();
-      connection.close();
- }
-   catch(SQLException e){
-     e.printStackTrace();
-     System.out.println("查找客户失败");
-   }
- }
-public void searchClient(String keyword) {//根据包含的搜索关键字搜索所有相关商品
+public Boolean payForOneCommodity(int userID, int commodityID) {
     try {
         Connection connection = DriverManager.getConnection("jdbc:sqlite:src/main/java/org/example/mydatabase.db");
         Statement statement = connection.createStatement();
         
-        String query = "SELECT * FROM client WHERE name LIKE '%" + keyword + "%' OR information LIKE '%" + keyword + "%'";
-        ResultSet resultSet = statement.executeQuery(query);
+        // 检查购物车中是否已存在相同的商品
+        String queryCheck = "SELECT * FROM shoppingCart_" + String.valueOf(userID) + " WHERE commodityID = " + String.valueOf(commodityID);
+        ResultSet resultSet = statement.executeQuery(queryCheck);
         
-        System.out.println("搜索与 "+keyword+" 有关的客户结果如下：");
-        while (resultSet.next()) {
-            int id = resultSet.getInt("id");
-            String name = resultSet.getString("name");
-            String information = resultSet.getString("information");
-            System.out.println("客户ID: " + id + ", 客户名称: " + name + ", 客户信息: " + information);
+        if (resultSet.next()) {
+            // 删除已存在的商品行
+            String deleteQuery = "DELETE FROM shoppingCart_" + String.valueOf(userID) + " WHERE commodityID = " + commodityID;
+            
+            String histryQueryCheck = "SELECT * FROM shoppingCart_" + String.valueOf(userID) + " WHERE commodityID = " + String.valueOf(commodityID);
+           
+            statement.executeUpdate(deleteQuery);
+            
+            System.out.println("商品已从购物车中删除");
+        } else {
+            System.out.println("购物车不存在该商品");
+            return false;
         }
         
         resultSet.close();
         statement.close();
         connection.close();
+        
+        return true;
     } catch (SQLException e) {
         e.printStackTrace();
-        System.out.println("搜索客户失败");
+        System.out.println("删除购物车商品失败");
+        return false;
     }
 }
+public void payOff(int userID,int id) {
+    try {
+        Connection connection = DriverManager.getConnection("jdbc:sqlite:src/main/java/org/example/mydatabase.db");
+        Statement statement = connection.createStatement();
+        
+        // 找到该用户对应的购物车
+        String queryCheck = "SELECT * FROM shoppingCart_" + String.valueOf(userID);
+        ResultSet rs = statement.executeQuery(queryCheck);
+        
+        if (rs.next()) {
+            System.out.println("购物车内容：");
+            do {
+                int commodityID = rs.getInt("commodityID");
+                int amount = rs.getInt("amount");
+                double totalPrice = (double) rs.getFloat("totalPrice");
+                String queryCommodity = "SELECT * FROM commodity WHERE id = " + String.valueOf(commodityID);
+                ResultSet resultSetCommodity = statement.executeQuery(queryCommodity);
+                
+                if (resultSetCommodity.next()) {
+                    String name = resultSetCommodity.getString("name");
+                    String information = resultSetCommodity.getString("information");
+                    float price = resultSetCommodity.getFloat("price");
+                   
+                    System.out.println("商品ID: " + commodityID);
+                    System.out.println("商品名称: " + name);
+                    System.out.println("商品信息: " + information);
+                    System.out.println("商品单价: " + price);
+                    System.out.println("数量: " + amount);
+                    System.out.println("总价: " + totalPrice);
+                    System.out.println("---------------------------");
+                }
+                
+                //resultSetCommodity.close();
+            } while (rs.next()); // 移动到下一行
+        } else {
+            System.out.println("购物车为空");
+        }
+        
+        rs.close();
+        statement.close();
+        connection.close();
+    } catch (SQLException e) {
+        e.printStackTrace();
+        System.out.println("购物车查看失败");
+    }
+}
+
 
 
 
